@@ -129,4 +129,4 @@ class TestRepayCredit:
 
         transaction_ids_after = [transaction.id for transaction in transactions_after]
 
-        assert transaction_ids_after == transaction_ids_before, 'После отклонённого погашения изменился список операций в БД"'
+        assert transaction_ids_after == transaction_ids_before, 'После отклонённого погашения изменился список операций в БД'
