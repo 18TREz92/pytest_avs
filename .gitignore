@@ -1,0 +1,10 @@
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Результаты Allure
+allure-results/
+
+# Вложения
+attachments/
