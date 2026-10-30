@@ -11,8 +11,8 @@ class TestUserLogin:
         login_user_request = LoginUserRequest(username="admin", password="123456")
         response = api_manager.admin_steps.login_user(login_user_request)
 
-        assert login_user_request.username == response.user.username
-        assert response.user.role == "ROLE_ADMIN"
+        assert login_user_request.username == response.user.username, 'Имя авторизованного администратора не совпадает с переданным'
+        assert response.user.role == "ROLE_ADMIN", 'После авторизации администратору возвращена неверная роль'
 
     def test_login_user_valid(self, api_manager: ApiManager, create_user_request: CreateUserRequest):  # Создание пользователя и авторизация под ним
         login_user_request = LoginUserRequest(
@@ -22,8 +22,8 @@ class TestUserLogin:
 
         response = api_manager.admin_steps.login_user(login_user_request)
 
-        assert response.user.username == login_user_request.username
-        assert response.user.role == "ROLE_USER"
+        assert response.user.username == login_user_request.username, 'Имя авторизованного пользователя не совпадает с переданным'
+        assert response.user.role == "ROLE_USER", 'Роль авторизованного пользователя не совпадает с его ролью при создании'
 
     # Негативные проверки (админ):
     @pytest.mark.parametrize(  # Некорректный логин/пароль

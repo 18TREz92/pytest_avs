@@ -53,3 +53,27 @@ class RandomModelGenerator:
         elif isinstance(field_type, type):
             return RandomModelGenerator.generate(field_type)
         return None
+
+    @staticmethod
+    def generate_deposit_amount(min_amount: int = 1000) -> int:
+        return random.randint(min_amount, 9000)
+
+    @staticmethod
+    def generate_transfer_amount(available_balance: float) -> int:
+        return random.randint(500, min(10000, int(available_balance)))
+
+    @staticmethod
+    def generate_deposit_amount_for_transfer() -> int:
+        return random.randint(6000, 9000)
+
+    @staticmethod
+    def generate_credit_amount() -> int:
+        return random.randint(5000, 15000)
+
+    @staticmethod
+    def generate_credit_term_months() -> int:
+        return random.randint(1, 60)
+
+    @staticmethod
+    def generate_partial_repay_amount(credit_amount: float) -> int:
+        return random.randint(1, int(credit_amount) - 1)
