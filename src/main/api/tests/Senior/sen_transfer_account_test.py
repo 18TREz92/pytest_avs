@@ -5,6 +5,7 @@ from src.main.api.models.transfer_account_request import TransferAccountRequest
 from sqlalchemy.orm import Session
 from src.main.api.db.crud.account_crud import AccountCrudDb as Account
 from src.main.api.generators.model_generator import RandomModelGenerator
+from src.main.api.utils import calculate_balance_after_transfer
 
 
 @pytest.mark.api_sen
@@ -24,7 +25,7 @@ class TestTransferAccount:
             )
         )
 
-        expected_balance = from_balance - transfer_amount
+        expected_balance = calculate_balance_after_transfer(from_balance, transfer_amount)
 
         assert transfer_response.fromAccountIdBalance == expected_balance, 'Баланс отправителя в ответе API не уменьшился на сумму перевода'
 

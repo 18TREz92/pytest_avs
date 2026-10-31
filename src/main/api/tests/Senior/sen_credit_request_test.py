@@ -5,6 +5,7 @@ from src.main.api.models.create_user_request import CreateCreditSecretRequest
 from src.main.api.models.credit_request_request import CreditRequestRequest
 from sqlalchemy.orm import Session
 from src.main.api.db.crud.account_crud import AccountCrudDb as Account
+from src.main.api.utils import calculate_balance_after_deposit
 
 
 @pytest.mark.api_sen
@@ -15,17 +16,17 @@ class TestRequestCredit:
                                   create_credit_account_response):
 
         amount = RandomModelGenerator.generate_credit_amount()
-        term_months = RandomModelGenerator.generate_credit_term_months()
 
-        credit_request = CreditRequestRequest(
-            accountId=create_credit_account_response.id,
-            amount=amount,
-            termMonths=term_months
+        credit_response = api_manager.user_steps.request_credit(
+            create_credit_secret_request,
+            CreditRequestRequest(
+                accountId=create_credit_account_response.id,
+                amount=amount,
+                termMonths=RandomModelGenerator.generate_credit_term_months()
+            )
         )
 
-        credit_response = api_manager.user_steps.request_credit(create_credit_secret_request, credit_request)
-
-        expected_balance = create_credit_account_response.balance + amount
+        expected_balance = calculate_balance_after_deposit(create_credit_account_response.balance, amount)
 
         assert credit_response.balance == expected_balance, 'Баланс в ответе API не увеличился на сумму кредита'
 
@@ -43,15 +44,14 @@ class TestRequestCredit:
     def test_request_credit_invalid(self, db_session: Session, amount: float, api_manager: ApiManager,
                                     create_credit_secret_request: CreateCreditSecretRequest,
                                     create_credit_account_response):
-        term_months = RandomModelGenerator.generate_credit_term_months()
-
-        credit_request = CreditRequestRequest(
-            accountId=create_credit_account_response.id,
-            amount=amount,
-            termMonths=term_months
+        api_manager.user_steps.request_invalid_credit(
+            create_credit_secret_request,
+            CreditRequestRequest(
+                accountId=create_credit_account_response.id,
+                amount=amount,
+                termMonths=RandomModelGenerator.generate_credit_term_months()
+            )
         )
-
-        api_manager.user_steps.request_invalid_credit(create_credit_secret_request, credit_request)
 
         account_from_db = Account.get_account_by_id(db_session, create_credit_account_response.id)
 

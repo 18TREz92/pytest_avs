@@ -15,10 +15,9 @@ class TestCreateAccount:
         response = api_manager.user_steps.create_account(create_user_request)
 
         assert response.balance == 0, 'Начальный баланс созданного аккаунта не равен 0'
-        account_id = response.id
 
-        account_from_db = Account.get_account_by_id(db_session, account_id)
-        assert account_from_db.id == account_id, 'Аккаунт не создан, id аккаунта нет в БД'
+        account_from_db = Account.get_account_by_id(db_session, response.id)
+        assert account_from_db.id == response.id, 'Аккаунт не создан, id аккаунта нет в БД'
         assert account_from_db.balance is not None, 'Поле баланса для созданного аккаунта отсутствует в БД'
 
     # Негативные проверки:
@@ -26,8 +25,7 @@ class TestCreateAccount:
                                              api_manager: ApiManager):  # Создание счёта в роли админа
         api_manager.admin_steps.admin_create_account()
 
-        admin_username = Config.fetch("adminUsername")
-        admin_from_db = User.get_user_by_username(db_session, admin_username)
+        admin_from_db = User.get_user_by_username(db_session, Config.fetch("adminUsername"))
         accounts_from_db = Account.get_accounts_by_user_id(db_session, admin_from_db.id)
 
         assert accounts_from_db == [], 'У администратора обнаружены счета, хотя их создание ему запрещено'
